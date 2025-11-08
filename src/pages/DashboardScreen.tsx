@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Plus, FileText, MessageSquare, Award, Target, TrendingUp, Folder, Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // Bu import zaten sizde mevcut
 
 interface CaseData {
     id: number;
@@ -18,6 +19,8 @@ interface StatsData {
 const DashboardScreen: React.FC = () => {
     const [stats, setStats] = useState<StatsData | null>(null);
     const [cases, setCases] = useState<CaseData[]>([]);
+
+    const navigate = useNavigate(); // Bu tanım da sizde mevcut
 
     useEffect(() => {
         setTimeout(() => {
@@ -53,13 +56,13 @@ const DashboardScreen: React.FC = () => {
                     <p className="text-gray-500">Bugün hangi vakayı çözmek istersin?</p>
                 </div>
 
-                {/* Bildirim Butonu */}
+                {/* --- 1. DÜZELTME: BİLDİRİM BUTONUNA onClick EKLENDİ --- */}
                 <button
+                    onClick={() => navigate("/notifications")} // <-- onClick eklendi
                     className="relative p-3 rounded-full bg-white shadow-sm border border-gray-200 hover:bg-gray-100 transition-all"
                     aria-label="Bildirimler"
                 >
                     <Bell className="w-6 h-6 text-blue-900" />
-                    {/* Kırmızı bildirim noktası */}
                     <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
             </div>
@@ -69,26 +72,21 @@ const DashboardScreen: React.FC = () => {
                 <div className="col-span-2 bg-white shadow-sm rounded-2xl p-8 border border-gray-100 text-center">
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Genel Puan</h2>
 
-                    {/* Ortalanmış Puan */}
                     <div className="mb-6">
                         <p className="text-5xl font-bold text-blue-900">{stats.totalPoints}</p>
                         <p className="text-sm text-gray-500 mt-1">Toplam Puan</p>
                     </div>
-
-                    {/* Alt istatistikler */}
                     <div className="grid grid-cols-3 gap-4 items-center text-center">
                         <div className="flex flex-col items-center">
                             <Award className="text-blue-900 w-6 h-6 mb-1" />
                             <span className="font-semibold text-gray-700">{stats.completedCases}</span>
                             <span className="text-xs text-gray-500">Tamamlanan Vaka</span>
                         </div>
-
                         <div className="flex flex-col items-center">
                             <Target className="text-blue-900 w-6 h-6 mb-1" />
                             <span className="font-semibold text-gray-700">%{stats.successRate}</span>
                             <span className="text-xs text-gray-500">Ortalama Başarı</span>
                         </div>
-
                         <div className="flex flex-col items-center">
                             <TrendingUp className="text-blue-900 w-6 h-6 mb-1" />
                             <span className="font-semibold text-gray-700">+{stats.weeklyIncrease}</span>
@@ -103,11 +101,19 @@ const DashboardScreen: React.FC = () => {
                         <Plus className="w-5 h-12" /> Yeni Vaka Başlat
                     </button>
 
-                    <button className="flex items-center justify-center gap-2 bg-white border border-gray-200 py-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                    {/* --- 2. DÜZELTME: NOTLARIM BUTONUNA onClick EKLENDİ --- */}
+                    <button
+                        onClick={() => navigate("/notes")} // <-- onClick eklendi
+                        className="flex items-center justify-center gap-2 bg-white border border-gray-200 py-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+                    >
                         <FileText className="w-5 h-12 text-blue-900" /> Notlarım
                     </button>
 
-                    <button className="flex items-center justify-center gap-2 bg-white border border-gray-200 py-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                    {/* --- 3. DÜZELTME: FORUM BUTONUNA onClick EKLENDİ --- */}
+                    <button
+                        onClick={() => navigate("/forum")} // <-- onClick eklendi
+                        className="flex items-center justify-center gap-2 bg-white border border-gray-200 py-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
+                    >
                         <MessageSquare className="w-5 h-12 text-blue-900" /> Forum
                     </button>
                 </div>

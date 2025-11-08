@@ -8,7 +8,11 @@ import RegisterScreen from "./pages/RegisterScreen";
 import AiAsistanScreen from "./pages/AiAsistanScreen";
 import ProfileScreen from "./pages/ProfileScreen";
 import ForgotPassword from "./pages/ForgotPassword";
-import SettingsPage from "./pages/SettingsPage/SettingsPage";
+import SettingsPage from "./pages/SettingsPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import NotesPage from "./pages/NotesPage";
+import ForumPage from "./pages/ForumPage";
+import NotificationsPage from "./pages/NotificationPage";
 
 const App: React.FC = () => {
   return (
@@ -82,6 +86,38 @@ const AppContent: React.FC = () => {
         element={
           <Layout>
             <SettingsPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/leaderboard"
+        element={
+          <Layout>
+            <LeaderboardPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/notes" // <-- "Notlarım" için gereken route
+        element={
+          <Layout>
+            <NotesPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/forum" // <-- YORUMU KALDIRIN
+        element={
+          <Layout>
+            <ForumPage />
+          </Layout>
+        }
+      />
+      <Route
+        path="/notifications" // <-- YORUM KALDIRILDI
+        element={
+          <Layout>
+            <NotificationsPage />
           </Layout>
         }
       />
