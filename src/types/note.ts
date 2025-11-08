@@ -1,11 +1,12 @@
-// Notun ana yapısı
-export interface Note {
-    id: string;
+// Not oluştururken veya düzenlerken kullanılan veri
+export interface NoteData {
     title: string;
     content: string;
-    category: string;
     color: string;
+    category: string;
 }
 
-// Formdan gelen veri (ID'siz hali)
-export type NoteData = Omit<Note, 'id'>;
+// Kaydedilmiş bir notun tam tipi (ID içerir)
+export interface Note extends NoteData {
+    id: string;
+}

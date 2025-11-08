@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import DashboardScreen from "./pages/DashboardScreen";
@@ -14,6 +14,9 @@ import NotesPage from "./pages/NotesPage";
 import ForumPage from "./pages/ForumPage";
 import NotificationsPage from "./pages/NotificationPage";
 
+
+import type { Note, NoteData } from '@/types/note'; // Not tipini import et
+
 const App: React.FC = () => {
   return (
     <Router>
@@ -25,6 +28,36 @@ const App: React.FC = () => {
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
 
+  // Notlar için state  
+  const [notes, setNotes] = useState<Note[]>([]);
+
+  // Not kaydetme fonksiyonu
+  const handleSaveNote = (noteData: NoteData, id: string
+    | null) => {
+    if (id) {
+      //Düzenleme 
+      setNotes((prevNotes) =>
+        prevNotes.map((note) =>
+          note.id === id ? { ...note, id } : note
+        )
+      );
+    } else {
+      //Yeni not ekleme
+      const newNote: Note = {
+        id: crypto.randomUUID(),
+        ...noteData,
+
+      };
+      setNotes((prevNotes) => [newNote, ...prevNotes]);
+    }
+  };
+
+  //Silme fonksiyonu AppContenente eklendi 
+  const handleDeleteNote = (id: string) => {
+    if (window.confirm("Bu notu silmek istediğinize emin misiniz?")) {
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+    }
+  };
   return (
     <Routes>
       {/* Giriş sayfaları (Layout dışında) */}
@@ -61,7 +94,7 @@ const AppContent: React.FC = () => {
         path="/cases"
         element={
           <Layout>
-            <CasesScreen />
+            <CasesScreen onSaveNote={handleSaveNote} />
           </Layout>
         }
       />
@@ -97,11 +130,16 @@ const AppContent: React.FC = () => {
           </Layout>
         }
       />
+      {/* --- 5. NotesPage artık state'i ve fonksiyonları prop olarak alıyor --- */}
       <Route
-        path="/notes" // <-- "Notlarım" için gereken route
+        path="/notes"
         element={
           <Layout>
-            <NotesPage />
+            <NotesPage
+              notes={notes}
+              onSaveNote={handleSaveNote}
+              onDeleteNote={handleDeleteNote}
+            />
           </Layout>
         }
       />

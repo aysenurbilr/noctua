@@ -1,10 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate eklendi
+import { useNavigate } from 'react-router-dom';
 import { IoArrowBack } from 'react-icons/io5';
 import { FiPlus, FiSearch, FiFileText } from 'react-icons/fi';
-import NewNoteModal from '@/components/NewNoteModal'; // Kısayol ile import
-import NoteCard from '@/components/NoteCard'; // Kısayol ile import
-import type { Note } from '@/types/note'; // Kısayol (alias) ile import
+import NewNoteModal from '@/components/NewNoteModal';
+import NoteCard from '@/components/NoteCard';
+import type { Note, NoteData } from '@/types/note'; // NoteData eklendi
+
+// --- 1. PROPS ARAYÜZÜ EKLENDİ ---
+interface NotesPageProps {
+    notes: Note[];
+    onSaveNote: (noteData: NoteData, id: string | null) => void;
+    onDeleteNote: (id: string) => void;
+}
 
 type FilterCategory = 'hepsi' | 'Hızlı Notlar' | 'Genel' | 'Vaka Notları' | 'Önemli' | 'Araştırma' | 'Fikirler';
 
@@ -18,37 +25,23 @@ const filters: { id: FilterCategory, label: string }[] = [
     { id: 'Fikirler', label: 'Fikirler' },
 ];
 
-const NotesPage: React.FC = () => {
+// --- 2. BİLEŞEN ARTIK PROPS ALIYOR ---
+const NotesPage: React.FC<NotesPageProps> = ({ notes, onSaveNote, onDeleteNote }) => {
     const [activeFilter, setActiveFilter] = useState<FilterCategory>('hepsi');
-    const [notes, setNotes] = useState<Note[]>([]);
+
+    // --- 3. BU STATE'LER App.tsx'e TAŞINDI, BURADAN SİLİNDİ ---
+    // const [notes, setNotes] = useState<Note[]>([]); 
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingNote, setEditingNote] = useState<Note | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const navigate = useNavigate(); // Geri butonu için
+    const navigate = useNavigate();
 
-    const handleSaveNote = (noteData: Omit<Note, 'id'>, id: string | null) => {
-        if (id) {
-            setNotes(prevNotes =>
-                prevNotes.map(note =>
-                    note.id === id ? { ...noteData, id } : note
-                )
-            );
-        } else {
-            const newNote: Note = {
-                id: crypto.randomUUID(),
-                ...noteData,
-            };
-            setNotes(prevNotes => [newNote, ...prevNotes]);
-        }
-        closeModal();
-    };
+    // --- 4. BU FONKSİYONLAR SİLİNDİ (Artık prop olarak geliyorlar) ---
+    // const handleSaveNote = ... (SİLİNDİ)
+    // const handleDeleteNote = ... (SİLİNDİ)
 
-    const handleDeleteNote = (id: string) => {
-        if (window.confirm('Bu notu silmek istediğinizden emin misiniz?')) {
-            setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
-        }
-    };
-
+    // Modal'ı aç/kapat (Bunlar sayfa içi state'ler, kalabilirler)
     const openModalForEdit = (note: Note) => {
         setEditingNote(note);
         setIsModalOpen(true);
@@ -64,21 +57,23 @@ const NotesPage: React.FC = () => {
         setEditingNote(null);
     };
 
+    // Filtreleme mantığı 'notes' prop'unu kullanacak şekilde güncellendi
     const filteredNotes = useMemo(() => {
         const lowerCaseQuery = searchQuery.toLowerCase();
-        return notes.filter(note => {
+        return notes.filter(note => { // 'notes' artık bir prop
             const categoryMatch = activeFilter === 'hepsi' || note.category === activeFilter;
             const searchMatch = !searchQuery ||
                 note.title.toLowerCase().includes(lowerCaseQuery) ||
                 note.content.toLowerCase().includes(lowerCaseQuery);
             return categoryMatch && searchMatch;
         });
-    }, [notes, activeFilter, searchQuery]);
+    }, [notes, activeFilter, searchQuery]); // State yerine prop'a bağımlı
 
     const noteCount = filteredNotes.length;
 
     const EmptyState = () => (
         <div className="flex flex-col items-center justify-center text-center p-16 mt-8 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            {/* ... (EmptyState içeriği aynı) ... */}
             <div className="w-28 h-28 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 mb-6">
                 <FiFileText size={50} />
             </div>
@@ -163,7 +158,7 @@ const NotesPage: React.FC = () => {
                                 key={note.id}
                                 note={note}
                                 onEdit={openModalForEdit}
-                                onDelete={handleDeleteNote}
+                                onDelete={onDeleteNote} // <-- Prop'u kullan
                             />
                         ))}
                     </div>
@@ -174,7 +169,7 @@ const NotesPage: React.FC = () => {
             <NewNoteModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
-                onSave={handleSaveNote}
+                onSave={onSaveNote} // <-- Prop'u kullan
                 existingNote={editingNote}
             />
         </div>

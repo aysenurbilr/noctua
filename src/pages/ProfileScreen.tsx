@@ -277,7 +277,7 @@ export default function ProfileScreen() {
 
       {/* Avatar Detay Modalı */}
       {showAvatarDetail && tempAvatar && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-60]">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-60">
           <div className="bg-white rounded-lg shadow-lg p-6 w-80 text-center">
             <img
               src={tempAvatar.image}

@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import QuickNoteModal from '@/components/QuickNoteModal';
+import type { NoteData } from '@/types/note'; // Kaydetme fonksiyonu için tip
 
-// --- Vaka Kartı Bileşeni ---
+// --- 1. PROPS ARAYÜZÜ EKLENDİ ---
+interface CasesScreenProps {
+    onSaveNote: (noteData: NoteData, id: string | null) => void;
+}
+
+// --- Vaka Kartı Bileşeni (Aynı) ---
 interface CaseCardProps {
     title: string;
     category: string;
@@ -43,12 +51,17 @@ const CaseCard: React.FC<CaseCardProps> = ({ title, category, level, status }) =
         </div>
     );
 };
+// --- Vaka Kartı Bitiş ---
 
-// --- Ana Vakalar Ekranı ---
-const CasesScreen: React.FC = () => {
+
+// --- 2. ANA BİLEŞEN ARTIK PROPS ALIYOR ---
+const CasesScreen: React.FC<CasesScreenProps> = ({ onSaveNote }) => {
     const colors = {
         primary: '#0d47a1',
     };
+
+    const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
+    const navigate = useNavigate();
 
     return (
         <div className="min-h-screen bg-gray-50 px-6 py-8">
@@ -63,16 +76,24 @@ const CasesScreen: React.FC = () => {
                 <CaseCard title="Miras Paylaşımı" category="Medeni Hukuk" level="Orta Seviye" status="yeni" />
             </div>
 
-            {/* Notlarım Butonu (Floating Action Button) */}
+            {/* Yüzen Not Butonu */}
             <button
                 className="fixed bottom-8 right-8 p-4 rounded-full shadow-lg text-white"
                 style={{ backgroundColor: colors.primary }}
-                aria-label="Notlarım"
+                aria-label="Hızlı Not Ekle"
+                onClick={() => setIsQuickNoteOpen(true)} // Modalı aç
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
             </button>
+
+            {/* Hızlı Not Modalı (Artık Taşınabilir Widget) */}
+            <QuickNoteModal
+                isOpen={isQuickNoteOpen}
+                onClose={() => setIsQuickNoteOpen(false)}
+                onSave={onSaveNote} // <-- 3. Prop doğrudan aktarılıyor
+            />
         </div>
     );
 };
