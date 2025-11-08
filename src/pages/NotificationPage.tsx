@@ -1,67 +1,27 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom'; // Geri butonu için
-import { IoArrowBack } from 'react-icons/io5'; // Geri butonu için
-import type { Notification } from '@/types/notification'; // Kısayol (alias) ile import
-import NotificationCard from '@/components/NotificationsCard'; // Kısayol ile import
+import { useNavigate } from 'react-router-dom';
+import { IoArrowBack } from 'react-icons/io5';
+import type { Notification } from '@/types/notification';
+// DİKKAT: Import'un 'NotificationCard' olduğundan emin olun (tek 'o' ile)
+import NotificationCard from '@/components/NotificationCard';
 import { FiCheckSquare, FiFilter } from 'react-icons/fi';
 
-// --- Mock Data (Sahte Veriler) ---
-const mockNotifications: Notification[] = [
-    {
-        id: 'n1',
-        category: 'leaderboard',
-        title: 'Yeni Liderlik Pozisyonu!',
-        description: 'Tebrikler! Liderlik tablosunda 5. sıraya yükseldiniz.',
-        timeAgo: '5 dakika önce',
-        isRead: false,
-    },
-    {
-        id: 'n2',
-        category: 'vaka',
-        title: 'Vaka Tamamlandı',
-        description: 'Kira Sözleşmesi Anlaşmazlığı vakasını başarıyla tamamladınız. +200 puan kazandınız!',
-        timeAgo: '2 saat önce',
-        isRead: false,
-    },
-    {
-        id: 'n3',
-        category: 'vaka',
-        title: 'Yeni Vaka Mevcut',
-        description: 'Size uygun yeni bir vaka eklendi: Miras Paylaşımı Davası',
-        timeAgo: '5 saat önce',
-        isRead: true,
-    },
-    {
-        id: 'n4',
-        category: 'sistem',
-        title: 'Haftalık Özet',
-        description: 'Bu hafta 3 vaka tamamladınız ve 450 puan kazandınız. Harika gidiyorsunuz!',
-        timeAgo: '1 gün önce',
-        isRead: true,
-    },
-];
-// --- Mock Data Sonu ---
+// --- Arayüz (props) ---
+interface NotificationsPageProps {
+    notifications: Notification[];
+    onToggleRead: (id: string) => void;
+    onDeleteNotification: (id: string) => void;
+    onMarkAllAsRead: () => void;
+}
 
-const NotificationsPage: React.FC = () => {
-    const [notifications, setNotifications] = useState(mockNotifications);
+const NotificationsPage: React.FC<NotificationsPageProps> = ({
+    notifications,
+    onToggleRead,
+    onDeleteNotification,
+    onMarkAllAsRead
+}) => {
     const [showOnlyUnread, setShowOnlyUnread] = useState(false);
-    const navigate = useNavigate(); // Geri butonu için
-
-    // --- FONKSİYONLAR ---
-    const handleMarkAllAsRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-        setShowOnlyUnread(false);
-    };
-
-    const handleToggleRead = (id: string) => {
-        setNotifications(prev =>
-            prev.map(n => (n.id === id ? { ...n, isRead: !n.isRead } : n))
-        );
-    };
-
-    const handleDeleteNotification = (id: string) => {
-        setNotifications(prev => prev.filter(n => n.id !== id));
-    };
+    const navigate = useNavigate();
 
     // Filtrelenmiş listeyi hesapla
     const filteredNotifications = useMemo(() => {
@@ -85,7 +45,7 @@ const NotificationsPage: React.FC = () => {
                     >
                         <IoArrowBack size={24} />
                     </button>
-                    <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">Bildirimler</h1>
+                    <h1 className="text-2xl font-semibold text-gray-800">Bildirimler</h1>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -102,7 +62,7 @@ const NotificationsPage: React.FC = () => {
 
                     <button
                         className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-600 rounded-lg cursor-pointer transition-colors hover:bg-gray-100 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100"
-                        onClick={handleMarkAllAsRead}
+                        onClick={onMarkAllAsRead}
                         disabled={unreadCount === 0}
                     >
                         <FiCheckSquare size={16} /> Tümünü Okundu İşaretle
@@ -110,15 +70,15 @@ const NotificationsPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* 2. Bildirim Listesi */}
+            {/* 2. Bildirim Listesi (Prop'ları doğru aktardığınızdan emin olun) */}
             <div className="flex flex-col gap-4">
                 {filteredNotifications.length > 0 ? (
                     filteredNotifications.map(notification => (
                         <NotificationCard
                             key={notification.id}
                             notification={notification}
-                            onToggleRead={handleToggleRead}
-                            onDelete={handleDeleteNotification}
+                            onToggleRead={onToggleRead} // onToggleRead prop'unu aktar
+                            onDelete={onDeleteNotification} // onDelete prop'una onDeleteNotification'ı aktar
                         />
                     ))
                 ) : (

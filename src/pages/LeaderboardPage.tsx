@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { FaTrophy, FaUserCircle } from 'react-icons/fa'; // Kupa ikonu
-import { useTheme } from '@/context/ThemeContext'; // Tema context'i
-// Kısayol (alias) ile import
+import { FaTrophy, FaUserCircle } from 'react-icons/fa';
+// import { useTheme } from '@/context/ThemeContext'; // <-- KULLANILMADIĞI İÇİN SİLİNDİ
 
-// Kullanıcı veri yapısını tanımlayalım
+// ... (UserRank arayüzü ve mock datalar aynı) ...
 interface UserRank {
     rank: number;
     name: string;
     puan: number;
-    isUser: boolean; // Kullanıcının kendisi mi? (vurgulamak için)
-    avatarUrl?: string; // Profil resmi URL'si (opsiyonel)
+    isUser: boolean;
+    avatarUrl?: string;
 }
 
-// --- Mock Data (Sahte Veriler) ---
 const genelLeaderboardData: UserRank[] = [
     { rank: 1, name: 'Ayşe Yılmaz', puan: 3850, isUser: false },
     { rank: 2, name: 'Mehmet Kaya', puan: 3420, isUser: false },
@@ -32,11 +30,10 @@ const arkadaslarLeaderboardData: UserRank[] = [
     { rank: 3, name: 'Can Arslan', puan: 2120, isUser: false },
     { rank: 4, name: 'Selin Aydın', puan: 1980, isUser: false },
 ];
-// --- Mock Data Sonu ---
 
 type Tab = 'genel' | 'arkadaslar';
 
-// Podyumdaki her bir kullanıcı için küçük bileşen
+// ... (PodiumItem ve RankItem bileşenleri aynı, değişiklik yok) ...
 const PodiumItem: React.FC<{ user: UserRank }> = ({ user }) => {
     let rankOrder = '';
     let rankStyles = '';
@@ -64,7 +61,6 @@ const PodiumItem: React.FC<{ user: UserRank }> = ({ user }) => {
                 ) : (
                     <FaUserCircle size={80} className="w-20 h-20 rounded-full border-4 object-cover text-gray-400 bg-gray-700" />
                 )}
-                {/* 1-2-3 Rozeti */}
                 <div className={`absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-base text-blue-900 border-4 border-blue-900 ${rankBadgeColor}`}>
                     {user.rank}
                 </div>
@@ -75,7 +71,6 @@ const PodiumItem: React.FC<{ user: UserRank }> = ({ user }) => {
     );
 };
 
-// Listedeki her bir kullanıcı için küçük bileşen
 const RankItem: React.FC<{ user: UserRank }> = ({ user }) => (
     <div className={`flex justify-between items-center p-4 rounded-lg border transition-all hover:shadow-md hover:-translate-y-0.5 ${user.isUser ? 'bg-yellow-300 border-yellow-400' : 'bg-white border-gray-200'
         }`}>
@@ -99,10 +94,10 @@ const RankItem: React.FC<{ user: UserRank }> = ({ user }) => (
     </div>
 );
 
-// Liderlik Tablosu Sayfası
+
 const LeaderboardPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<Tab>('genel');
-    const { theme } = useTheme(); // Tema context'ini kullan (eğer ilerde dark mode'a özel bir şey gerekirse)
+    // const { theme } = useTheme(); // <-- KULLANILMADIĞI İÇİN SİLİNDİ
 
     const data = activeTab === 'genel' ? genelLeaderboardData : arkadaslarLeaderboardData;
 

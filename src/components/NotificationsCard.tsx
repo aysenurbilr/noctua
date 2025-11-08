@@ -71,11 +71,17 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
         setIsMenuOpen(false); // Menüyü kapat
     };
 
+    // [!!] DÜZELTİLMİŞ FONKSİYON
     // Menü açıkken dışarıya tıklanırsa kapat (blur olayı)
-    const handleBlurContainer = () => {
-        setTimeout(() => {
-            setIsMenuOpen(false);
-        }, 150); // Buton tıklamasını algılamak için kısa bir gecikme
+    const handleBlurContainer = (e: React.FocusEvent<HTMLDivElement>) => {
+        // Eğer odak, div'in içindeki başka bir elemana geçiyorsa (örn: "Sil" butonu)
+        // o zaman menüyü kapatma.
+        if (e.currentTarget.contains(e.relatedTarget as Node)) {
+            return;
+        }
+
+        // Odak tamamen menünün dışına çıkarsa, menüyü kapat.
+        setIsMenuOpen(false);
     };
 
     return (
@@ -111,7 +117,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
             {/* 3. Seçenekler (3 nokta) Bölümü */}
             <div
                 className="relative self-start"
-                onBlur={handleBlurContainer} // Dışarıya tıklanınca menüyü kapat
+                onBlur={handleBlurContainer} // Bu prop, DÜZELTİLMİŞ fonksiyonu çağıracak
             >
                 <button
                     className="bg-transparent border-none text-gray-500 cursor-pointer p-1 rounded-md text-xl leading-none tracking-tighter hover:bg-gray-100"

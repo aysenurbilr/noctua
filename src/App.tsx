@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
-import Layout from "./components/Layout";
-import DashboardScreen from "./pages/DashboardScreen";
-import CasesScreen from "./pages/CasesScreen";
-import LoginScreen from "./pages/LoginScreen";
-import RegisterScreen from "./pages/RegisterScreen";
-import AiAsistanScreen from "./pages/AiAsistanScreen";
-import ProfileScreen from "./pages/ProfileScreen";
-import ForgotPassword from "./pages/ForgotPassword";
-import SettingsPage from "./pages/SettingsPage";
-import LeaderboardPage from "./pages/LeaderboardPage";
-import NotesPage from "./pages/NotesPage";
-import ForumPage from "./pages/ForumPage";
-import NotificationsPage from "./pages/NotificationPage";
 
+// --- Düzeltilmiş Importlar ---
+import Layout from "@/components/Layout";
+import DashboardScreen from "@/pages/DashboardScreen";
+import CasesScreen from "@/pages/CasesScreen";
+import LoginScreen from "@/pages/LoginScreen";
+import RegisterScreen from "@/pages/RegisterScreen";
+import AiAsistanScreen from "@/pages/AiAsistanScreen";
+import ProfileScreen from "@/pages/ProfileScreen";
+import ForgotPassword from "@/pages/ForgotPassword";
+import SettingsPage from "@/pages/SettingsPage";
+import LeaderboardPage from "@/pages/LeaderboardPage";
+import NotesPage from "@/pages/NotesPage";
+import ForumPage from "@/pages/ForumPage";
+import NotificationsPage from "@/pages/NotificationPage";
 
-import type { Note, NoteData } from '@/types/note'; // Not tipini import et
+import type { Note, NoteData } from '@/types/note';
+import type { Notification } from '@/types/notification';
+import { mockNotifications } from '@/data/notificationData';
 
 const App: React.FC = () => {
   return (
@@ -28,36 +31,50 @@ const App: React.FC = () => {
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
 
-  // Notlar için state  
+  // --- 1. Notlar State ---
   const [notes, setNotes] = useState<Note[]>([]);
-
-  // Not kaydetme fonksiyonu
-  const handleSaveNote = (noteData: NoteData, id: string
-    | null) => {
+  // ... (Not fonksiyonları burada) ...
+  const handleSaveNote = (noteData: NoteData, id: string | null) => {
     if (id) {
-      //Düzenleme 
       setNotes((prevNotes) =>
         prevNotes.map((note) =>
-          note.id === id ? { ...note, id } : note
+          note.id === id ? { ...note, ...noteData } : note
         )
       );
     } else {
-      //Yeni not ekleme
       const newNote: Note = {
         id: crypto.randomUUID(),
         ...noteData,
-
       };
-      setNotes((prevNotes) => [newNote, ...prevNotes]);
+      setNotes(prevNotes => [newNote, ...prevNotes]);
+    }
+  };
+  const handleDeleteNote = (id: string) => {
+    if (window.confirm('Bu notu silmek istediğinizden emin misiniz?')) {
+      setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
     }
   };
 
-  //Silme fonksiyonu AppContenente eklendi 
-  const handleDeleteNote = (id: string) => {
-    if (window.confirm("Bu notu silmek istediğinize emin misiniz?")) {
-      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
-    }
+  // --- 2. Bildirimler State (Fonksiyonlar burada) ---
+  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+
+  const handleToggleRead = (id: string) => {
+    setNotifications(prev =>
+      prev.map(n => (n.id === id ? { ...n, isRead: !n.isRead } : n))
+    );
   };
+
+  const handleDeleteNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+
   return (
     <Routes>
       {/* Giriş sayfaları (Layout dışında) */}
@@ -80,61 +97,91 @@ const AppContent: React.FC = () => {
         element={<ForgotPassword onNavigateToLogin={() => navigate("/login")} />}
       />
 
-
-      {/* Layout içindeki sayfalar */}
+      {/* --- BURASI ÇOK ÖNEMLİ --- */}
+      {/* Layout içindeki her sayfaya bildirim propları gönderilmeli */}
       <Route
         path="/"
         element={
-          <Layout>
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
             <DashboardScreen />
           </Layout>
         }
       />
+
       <Route
         path="/cases"
         element={
-          <Layout>
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
             <CasesScreen onSaveNote={handleSaveNote} />
           </Layout>
         }
       />
+
       <Route
         path="/asistan"
         element={
-          <Layout>
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
             <AiAsistanScreen />
-          </Layout>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <Layout>
-            <ProfileScreen />
-          </Layout>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <Layout>
-            <SettingsPage />
           </Layout>
         }
       />
       <Route
         path="/leaderboard"
         element={
-          <Layout>
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
             <LeaderboardPage />
           </Layout>
         }
       />
-      {/* --- 5. NotesPage artık state'i ve fonksiyonları prop olarak alıyor --- */}
+      <Route
+        path="/forum"
+        element={
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
+            <ForumPage />
+          </Layout>
+        }
+      />
+
       <Route
         path="/notes"
         element={
-          <Layout>
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
             <NotesPage
               notes={notes}
               onSaveNote={handleSaveNote}
@@ -143,26 +190,58 @@ const AppContent: React.FC = () => {
           </Layout>
         }
       />
+
+      {/* --- VE BURASI ÇOK ÖNEMLİ --- */}
+      {/* NotificationsPage'e de prop'ların gönderilmesi gerekir */}
       <Route
-        path="/forum" // <-- YORUMU KALDIRIN
+        path="/notifications"
         element={
-          <Layout>
-            <ForumPage />
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
+            <NotificationsPage
+              notifications={notifications}
+              onToggleRead={handleToggleRead}
+              onDeleteNotification={handleDeleteNotification}
+              onMarkAllAsRead={handleMarkAllAsRead}
+            />
           </Layout>
         }
       />
       <Route
-        path="/notifications" // <-- YORUM KALDIRILDI
+        path="/profile"
         element={
-          <Layout>
-            <NotificationsPage />
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
+            <ProfileScreen />
+          </Layout>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <Layout
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onToggleRead={handleToggleRead}
+            onDeleteNotification={handleDeleteNotification}
+            onMarkAllAsRead={handleMarkAllAsRead}
+          >
+            <SettingsPage />
           </Layout>
         }
       />
 
     </Routes>
-
-
   );
 };
 

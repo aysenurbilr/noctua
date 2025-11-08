@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Plus, FileText, MessageSquare, Award, Target, TrendingUp, Folder, Bell } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Bu import zaten sizde mevcut
+// Artık 'Link' veya 'useNavigate' kullanılmıyor (Link'i sildim)
+import { useNavigate } from "react-router-dom";
+// Bell ikonu import'u kaldırıldı
+import { Plus, FileText, MessageSquare, Award, Target, TrendingUp, Folder } from "lucide-react";
 
 interface CaseData {
     id: number;
@@ -19,8 +21,7 @@ interface StatsData {
 const DashboardScreen: React.FC = () => {
     const [stats, setStats] = useState<StatsData | null>(null);
     const [cases, setCases] = useState<CaseData[]>([]);
-
-    const navigate = useNavigate(); // Bu tanım da sizde mevcut
+    const navigate = useNavigate();
 
     useEffect(() => {
         setTimeout(() => {
@@ -49,22 +50,13 @@ const DashboardScreen: React.FC = () => {
 
     return (
         <div className="p-8 bg-gray-50 min-h-screen">
-            {/* Üst Başlık ve Bildirim Butonu */}
+            {/* Üst Başlık */}
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-semibold text-gray-800">Hoş Geldin, Avukat!</h1>
                     <p className="text-gray-500">Bugün hangi vakayı çözmek istersin?</p>
                 </div>
-
-                {/* --- 1. DÜZELTME: BİLDİRİM BUTONUNA onClick EKLENDİ --- */}
-                <button
-                    onClick={() => navigate("/notifications")} // <-- onClick eklendi
-                    className="relative p-3 rounded-full bg-white shadow-sm border border-gray-200 hover:bg-gray-100 transition-all"
-                    aria-label="Bildirimler"
-                >
-                    <Bell className="w-6 h-6 text-blue-900" />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
+                {/* Zil ikonu buradan kaldırıldı */}
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -101,17 +93,15 @@ const DashboardScreen: React.FC = () => {
                         <Plus className="w-5 h-12" /> Yeni Vaka Başlat
                     </button>
 
-                    {/* --- 2. DÜZELTME: NOTLARIM BUTONUNA onClick EKLENDİ --- */}
                     <button
-                        onClick={() => navigate("/notes")} // <-- onClick eklendi
+                        onClick={() => navigate("/notes")}
                         className="flex items-center justify-center gap-2 bg-white border border-gray-200 py-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
                     >
                         <FileText className="w-5 h-12 text-blue-900" /> Notlarım
                     </button>
 
-                    {/* --- 3. DÜZELTME: FORUM BUTONUNA onClick EKLENDİ --- */}
                     <button
-                        onClick={() => navigate("/forum")} // <-- onClick eklendi
+                        onClick={() => navigate("/forum")}
                         className="flex items-center justify-center gap-2 bg-white border border-gray-200 py-4 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm"
                     >
                         <MessageSquare className="w-5 h-12 text-blue-900" /> Forum

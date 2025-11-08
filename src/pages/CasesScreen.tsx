@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// import { Link, useNavigate } from 'react-router-dom'; // <-- KULLANILMADIĞI İÇİN SİLİNDİ
 import QuickNoteModal from '@/components/QuickNoteModal';
-import type { NoteData } from '@/types/note'; // Kaydetme fonksiyonu için tip
+import type { NoteData } from '@/types/note';
 
-// --- 1. PROPS ARAYÜZÜ EKLENDİ ---
 interface CasesScreenProps {
     onSaveNote: (noteData: NoteData, id: string | null) => void;
 }
 
-// --- Vaka Kartı Bileşeni (Aynı) ---
+// ... (CaseCard bileşeni aynı, değişiklik yok) ...
 interface CaseCardProps {
     title: string;
     category: string;
@@ -53,15 +52,13 @@ const CaseCard: React.FC<CaseCardProps> = ({ title, category, level, status }) =
 };
 // --- Vaka Kartı Bitiş ---
 
-
-// --- 2. ANA BİLEŞEN ARTIK PROPS ALIYOR ---
 const CasesScreen: React.FC<CasesScreenProps> = ({ onSaveNote }) => {
     const colors = {
         primary: '#0d47a1',
     };
 
     const [isQuickNoteOpen, setIsQuickNoteOpen] = useState(false);
-    const navigate = useNavigate();
+    // const navigate = useNavigate(); // <-- KULLANILMADIĞI İÇİN SİLİNDİ
 
     return (
         <div className="min-h-screen bg-gray-50 px-6 py-8">
@@ -88,11 +85,10 @@ const CasesScreen: React.FC<CasesScreenProps> = ({ onSaveNote }) => {
                 </svg>
             </button>
 
-            {/* Hızlı Not Modalı (Artık Taşınabilir Widget) */}
             <QuickNoteModal
                 isOpen={isQuickNoteOpen}
                 onClose={() => setIsQuickNoteOpen(false)}
-                onSave={onSaveNote} // <-- 3. Prop doğrudan aktarılıyor
+                onSave={onSaveNote}
             />
         </div>
     );
